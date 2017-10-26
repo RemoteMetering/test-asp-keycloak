@@ -39,10 +39,8 @@ namespace CoreApp
                 
             })
            .AddCookie()
-         // .AddOpenIdConnect("oidc", options =>
          .AddOpenIdConnect(options =>
          {
-              //options.AuthenticationScheme = "oidc";
               options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
               options.Authority = Configuration["Authentication:KeycloakAuthentication:ServerAddress"] + "/auth/realms/" + Configuration["Authentication:KeycloakAuthentication:Realm"];
               options.RequireHttpsMetadata = false; //only in development
@@ -55,48 +53,14 @@ namespace CoreApp
               options.SaveTokens = true;
           });
 
-            services.AddAuthorization(options =>
-            {
-                options.AddPolicy("Accounting", policy =>
-                policy.RequireClaim("member_of", "[accounting]")); //this claim value is an array. Any suggestions how to extract just single role? This still works.
-            });
-
-            services.AddMvc();
-            //services.ConfigureApplicationCookie(options => options.AccessDeniedPath = "/Home/AccessDenied");
-            //services.ConfigureApplicationCookie(new CookieAuthenticationOptions
+            //services.AddAuthorization(options =>
             //{
-            //    AuthenticationScheme = CookieAuthenticationDefaults.AuthenticationScheme,
-
-            //    AutomaticAuthenticate = true,
-            //    CookieHttpOnly = true,
-            //    CookieSecure = CookieSecurePolicy.SameAsRequest
+            //    options.AddPolicy("Accounting", policy =>
+            //    policy.RequireClaim("member_of", "[accounting]")); //this claim value is an array. Any suggestions how to extract just single role? This still works.
             //});
 
-          
-        }
+            services.AddMvc();
 
-        private OpenIdConnectOptions CreateKeycloakOpenIdConnectOptions()
-        {
-            var ans = Configuration["Authentication:KeycloakAuthentication:ServerAddress"] + "/auth/realms/" + Configuration["Authentication:KeycloakAuthentication:Realm"];
-            
-            var options = new OpenIdConnectOptions
-            {
-                
-                SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme,
-                Authority = Configuration["Authentication:KeycloakAuthentication:ServerAddress"] + "/auth/realms/" + Configuration["Authentication:KeycloakAuthentication:Realm"],
-                RequireHttpsMetadata = false, //only in development
-                //PostLogoutRedirectUri = Configuration["Authentication:KeycloakAuthentication:PostLogoutRedirectUri"],
-                //SignedOutCallbackPath = Configuration["Authentication:KeycloakAuthentication:SignedOutCallbackPath"],
-                ClientId = Configuration["Authentication:KeycloakAuthentication:ClientId"],
-                ClientSecret = Configuration["Authentication:KeycloakAuthentication:ClientSecret"],
-                ResponseType = OpenIdConnectResponseType.Code,
-                GetClaimsFromUserInfoEndpoint = true,
-                SaveTokens = true,
-              
-
-            };
-            options.Scope.Add("openid");
-            return options;
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
